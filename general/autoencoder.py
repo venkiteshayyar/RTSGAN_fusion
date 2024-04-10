@@ -299,6 +299,7 @@ class Autoencoder(nn.Module):
         self.decoder.embed = self.encoder.embed
         
     def forward(self, sta, dyn, lag, mask, priv, nex, times, seq_len, forcing=1):
+        print(seq_len)
         hidden = self.encoder(sta, dyn, priv, nex, mask, times, seq_len)
         return self.decoder(hidden, sta, dyn, lag, mask, priv, times, seq_len, forcing=forcing)
  

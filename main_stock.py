@@ -43,7 +43,7 @@ parser.add_argument("--fix-ae", dest="fix_ae", default=None, help="Test mode")
 parser.add_argument("--fix-gan", dest="fix_gan", default=None, help="Test mode")
 parser.add_argument("--ae-batch-size", default=128, dest="ae_batch_size", type=int,
                     help="Minibatch size for autoencoder")
-parser.add_argument("--gan-batch-size", default=512, dest="gan_batch_size", type=int,
+parser.add_argument("--gan-batch-size", default=64, dest="gan_batch_size", type=int,
                     help="Minibatch size for WGAN")
 parser.add_argument("--embed-dim", default=96, dest="embed_dim", type=int, help="dim of hidden state")
 parser.add_argument("--hidden-dim", default=24, dest="hidden_dim", type=int, help="dim of GRU hidden state")
@@ -66,7 +66,7 @@ make_sure_path_exists(root_dir)
 
 devices=[int(x) for x in options.devi]
 device = torch.device("cuda:{}".format(devices[0]))  
-
+device='cpu'
 # ===-----------------------------------------------------------------------===
 # Set up logging
 # ===-----------------------------------------------------------------------===
@@ -112,6 +112,8 @@ params["logger"]=logger
 params["device"]=device
 print(params.keys())
 
+# print(train_set['seq_len'][0])
+
 syn = AeGAN((static_processor, dynamic_processor), params)
 
 if options.eval_ae:
@@ -140,7 +142,6 @@ else:
 
 logger.info("\n")
 logger.info("Generating data!")
-result = syn.synthesize(len(train_set))
-#print(result[0], np.array(result[0]).shape)
+result = syn.synthesize(len(train_set),train_set['seq_len'][0],100)
 with open("{}/data".format(root_dir), "wb") as f:
     pickle.dump(result, f)
